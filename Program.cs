@@ -4,6 +4,7 @@ using StickyNotes.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//the db is found in /var/lib/stickynotes/notes.db
 // Configure SQLite
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
