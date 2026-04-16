@@ -1,0 +1,51 @@
+@page
+@model StickyNotes.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Sign In — StickyNotes";
+    Layout = "_Layout";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <span class="auth-icon">📝</span>
+            <h1>StickyNotes</h1>
+            <p class="auth-subtitle">Sign in to your notes</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="alert alert-error" id="login-error">
+                @Model.ErrorMessage
+            </div>
+        }
+
+        <form method="post" class="auth-form" id="login-form">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="Username" class="form-input"
+                       placeholder="Enter your username" required autofocus
+                       value="@Model.Username" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="Password" class="form-input"
+                       placeholder="Enter your password" required />
+            </div>
+            <div class="form-group form-check">
+                <label class="check-label">
+                    <input type="checkbox" name="RememberMe" value="true" checked="@Model.RememberMe" />
+                    <span>Remember me</span>
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full" id="login-submit">
+                Sign In
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="/Account/Register" id="register-link">Create one</a></p>
+        </div>
+    </div>
+</div>

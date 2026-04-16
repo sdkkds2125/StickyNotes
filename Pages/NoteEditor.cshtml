@@ -1,0 +1,118 @@
+@page
+@model StickyNotes.Pages.NoteEditorModel
+@{
+    var isNew = Model.NoteId == 0;
+    ViewData["Title"] = (isNew ? "New Note" : "Edit Note") + " — StickyNotes";
+    Layout = "_Layout";
+}
+
+<div class="editor-container">
+    <div class="editor-card" style="--note-color: @Model.Color;">
+        <form method="post" id="note-form" class="editor-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="NoteId" value="@Model.NoteId" />
+            
+            <div class="editor-toolbar">
+                <a href="/" class="btn btn-ghost" id="back-btn">← Back</a>
+                <div class="toolbar-right">
+                    @if (!isNew)
+                    {
+                        <button type="submit" asp-page-handler="Delete" class="btn btn-danger" id="delete-btn"
+                                onclick="return confirm('Are you sure you want to delete this note?')">
+                            🗑️ Delete
+                        </button>
+                    }
+                    <button type="submit" class="btn btn-primary" id="save-btn">
+                        💾 Save
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor-body">
+                <input type="text" name="Title" class="editor-title" 
+                       placeholder="Note title (optional)" 
+                       value="@Model.Title" id="note-title" />
+
+                <div class="editor-options">
+                    <div class="color-picker" id="color-picker">
+                        <span class="color-label">Color:</span>
+                        @{
+                            var colors = new[] {
+                                ("#fef68a", "Yellow"),
+                                ("#f9a8d4", "Pink"),
+                                ("#93c5fd", "Blue"),
+                                ("#86efac", "Green"),
+                                ("#c4b5fd", "Purple"),
+                                ("#fdba74", "Orange")
+                            };
+                        }
+                        @foreach (var (hex, name) in colors)
+                        {
+                            <label class="color-swatch @(hex == Model.Color ? "active" : "")" 
+                                   title="@name" style="background-color: @hex;">
+                                <input type="radio" name="Color" value="@hex" 
+                                       @(hex == Model.Color ? "checked" : "") />
+                                @if (hex == Model.Color)
+                                {
+                                    <span class="color-check">✓</span>
+                                }
+                            </label>
+                        }
+                    </div>
+
+                    <div class="type-toggle" id="type-toggle">
+                        <label class="toggle-option @(Model.NoteType == "Text" ? "active" : "")">
+                            <input type="radio" name="NoteType" value="Text" 
+                                   @(Model.NoteType == "Text" ? "checked" : "") />
+                            📝 Text
+                        </label>
+                        <label class="toggle-option @(Model.NoteType == "Checklist" ? "active" : "")">
+                            <input type="radio" name="NoteType" value="Checklist" 
+                                   @(Model.NoteType == "Checklist" ? "checked" : "") />
+                            ☑️ Checklist
+                        </label>
+                    </div>
+
+                    <label class="pin-toggle">
+                        <input type="checkbox" name="IsPinned" value="true" 
+                               @(Model.IsPinned ? "checked" : "") />
+                        <span>📌 Pin to top</span>
+                    </label>
+                </div>
+
+                <div id="text-editor" class="@(Model.NoteType == "Text" ? "" : "hidden")">
+                    <textarea name="Content" class="editor-textarea" 
+                              placeholder="Write your note here..." 
+                              id="note-content">@Model.Content</textarea>
+                </div>
+
+                <div id="checklist-editor" class="@(Model.NoteType == "Checklist" ? "" : "hidden")">
+                    <div class="checklist-items" id="checklist-items">
+                        @for (int i = 0; i < Model.ChecklistItems.Count; i++)
+                        {
+                            <div class="checklist-item" data-index="@i">
+                                <label class="checklist-check">
+                                    <input type="checkbox" 
+                                           name="ChecklistItems[@i].IsChecked" 
+                                           value="true"
+                                           @(Model.ChecklistItems[i].IsChecked ? "checked" : "") />
+                                    <span class="checkmark"></span>
+                                </label>
+                                <input type="hidden" name="ChecklistItems[@i].Id" value="@Model.ChecklistItems[i].Id" />
+                                <input type="text" name="ChecklistItems[@i].Content" 
+                                       value="@Model.ChecklistItems[i].Content"
+                                       class="checklist-input @(Model.ChecklistItems[i].IsChecked ? "checked-text" : "")"
+                                       placeholder="Item text..." />
+                                <input type="hidden" name="ChecklistItems[@i].Position" value="@i" />
+                                <button type="button" class="btn-remove-item" onclick="removeChecklistItem(this)" title="Remove">×</button>
+                            </div>
+                        }
+                    </div>
+                    <button type="button" class="btn btn-ghost btn-add-item" id="add-item-btn" onclick="addChecklistItem()">
+                        + Add item
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,38 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] ?? "StickyNotes")</title>
+    <meta name="description" content="Self-hosted note-taking app with sticky notes and checklists" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <nav class="navbar">
+            <a href="/" class="navbar-brand">
+                <span class="brand-icon">📝</span>
+                <span class="brand-text">StickyNotes</span>
+            </a>
+            <div class="navbar-actions">
+                <span class="navbar-user">@User.Identity?.Name</span>
+                <form method="post" asp-page="/Account/Logout" class="navbar-form">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-ghost" id="logout-btn">Sign Out</button>
+                </form>
+            </div>
+        </nav>
+    }
+    <main class="main-content">
+        @RenderBody()
+    </main>
+    <script src="~/js/site.js"></script>
+</body>
+</html>

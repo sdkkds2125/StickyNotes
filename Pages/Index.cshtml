@@ -1,0 +1,104 @@
+@page
+@model StickyNotes.Pages.IndexModel
+@{
+    ViewData["Title"] = "My Notes — StickyNotes";
+    Layout = "_Layout";
+}
+
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>My Notes</h1>
+        <a href="/NoteEditor" class="btn btn-primary" id="new-note-btn">
+            <span class="btn-icon">+</span> New Note
+        </a>
+    </div>
+
+    @if (!Model.Notes.Any())
+    {
+        <div class="empty-state" id="empty-state">
+            <div class="empty-icon">📋</div>
+            <h2>No notes yet</h2>
+            <p>Create your first note to get started!</p>
+            <a href="/NoteEditor" class="btn btn-primary">Create a Note</a>
+        </div>
+    }
+    else
+    {
+        <div class="notes-grid" id="notes-grid">
+            @foreach (var note in Model.Notes)
+            {
+                <div class="note-card @(note.IsPinned ? "pinned" : "")" 
+                     style="--note-color: @note.Color; --note-color-dark: @(note.Color)33;"
+                     data-note-id="@note.Id" id="note-@note.Id">
+                    
+                    @if (note.IsPinned)
+                    {
+                        <div class="pin-badge" title="Pinned">📌</div>
+                    }
+
+                    <a href="/NoteEditor?id=@note.Id" class="note-link">
+                        @if (!string.IsNullOrWhiteSpace(note.Title))
+                        {
+                            <h3 class="note-title">@note.Title</h3>
+                        }
+
+                        @if (note.Type == StickyNotes.Models.NoteType.Text)
+                        {
+                            <p class="note-content">@(note.Content.Length > 200 ? note.Content[..200] + "..." : note.Content)</p>
+                        }
+                        else
+                        {
+                            <div class="note-checklist-preview">
+                                @{ 
+                                    var items = note.ChecklistItems.OrderBy(c => c.Position).Take(6).ToList();
+                                    var total = note.ChecklistItems.Count;
+                                    var done = note.ChecklistItems.Count(c => c.IsChecked);
+                                }
+                                @foreach (var item in items)
+                                {
+                                    <div class="checklist-preview-item @(item.IsChecked ? "checked" : "")">
+                                        <span class="check-icon">@(item.IsChecked ? "☑" : "☐")</span>
+                                        <span class="check-text">@item.Content</span>
+                                    </div>
+                                }
+                                @if (total > 6)
+                                {
+                                    <div class="checklist-more">+@(total - 6) more items</div>
+                                }
+                                <div class="checklist-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: @(total > 0 ? (done * 100 / total) : 0)%"></div>
+                                    </div>
+                                    <span class="progress-text">@done/@total</span>
+                                </div>
+                            </div>
+                        }
+                    </a>
+
+                    <div class="note-footer">
+                        <span class="note-date">@note.UpdatedAt.ToString("MMM d, yyyy")</span>
+                        <div class="note-actions">
+                            <form method="post" asp-page-handler="TogglePin" class="inline-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="noteId" value="@note.Id" />
+                                <button type="submit" class="btn-icon-only" title="@(note.IsPinned ? "Unpin" : "Pin")">
+                                    @(note.IsPinned ? "📌" : "📍")
+                                </button>
+                            </form>
+                            <form method="post" asp-page-handler="Delete" class="inline-form delete-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="noteId" value="@note.Id" />
+                                <button type="submit" class="btn-icon-only btn-danger-icon" title="Delete"
+                                        onclick="return confirm('Delete this note?')">🗑️</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<a href="/NoteEditor" class="fab" id="fab-new-note" title="New Note">
+    <span>+</span>
+</a>

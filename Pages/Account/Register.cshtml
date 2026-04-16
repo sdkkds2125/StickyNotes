@@ -1,0 +1,53 @@
+@page
+@model StickyNotes.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Create Account — StickyNotes";
+    Layout = "_Layout";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <span class="auth-icon">📝</span>
+            <h1>StickyNotes</h1>
+            <p class="auth-subtitle">Create your account</p>
+        </div>
+
+        @if (Model.Errors.Any())
+        {
+            <div class="alert alert-error" id="register-errors">
+                @foreach (var error in Model.Errors)
+                {
+                    <p>@error</p>
+                }
+            </div>
+        }
+
+        <form method="post" class="auth-form" id="register-form">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="Username" class="form-input"
+                       placeholder="Choose a username" required autofocus
+                       value="@Model.Username" />
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="Password" class="form-input"
+                       placeholder="At least 6 characters" required />
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="ConfirmPassword" class="form-input"
+                       placeholder="Re-enter your password" required />
+            </div>
+            <button type="submit" class="btn btn-primary btn-full" id="register-submit">
+                Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="/Account/Login" id="login-link">Sign in</a></p>
+        </div>
+    </div>
+</div>
