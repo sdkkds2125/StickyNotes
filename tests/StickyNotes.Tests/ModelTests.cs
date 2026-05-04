@@ -7,6 +7,7 @@ namespace StickyNotes.Tests;
 
 public class ModelTests
 {
+    // Ensures a note cannot be saved if its title exceeds the 200-character database limit
     [Fact]
     public void Note_ShouldHaveValidationErrors_WhenTitleIsTooLong()
     {
@@ -20,6 +21,7 @@ public class ModelTests
         Assert.Contains(results, r => r.MemberNames.Contains("Title"));
     }
 
+    // Ensures a checklist item cannot be saved without content, as it is a required field
     [Fact]
     public void ChecklistItem_ShouldHaveValidationErrors_WhenContentIsMissing()
     {
