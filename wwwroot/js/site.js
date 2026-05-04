@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initColorPicker();
     initTypeToggle();
     initChecklistInteractions();
+    initChecklistDragAndDrop();
     initAutoResizeTextarea();
     initNoteCardAnimations();
 });
@@ -100,7 +101,9 @@ function addChecklistItem() {
     const item = document.createElement('div');
     item.className = 'checklist-item';
     item.setAttribute('data-index', index);
+    item.setAttribute('draggable', 'true');
     item.innerHTML = `
+        <div class="drag-handle" title="Drag to reorder">☰</div>
         <label class="checklist-check">
             <input type="checkbox" 
                    name="ChecklistItems[${index}].IsChecked" 
@@ -115,6 +118,9 @@ function addChecklistItem() {
     `;
 
     container.appendChild(item);
+    
+    // Add event listeners for new item
+    addDragListeners(item);
 
     // Focus the new input
     const newInput = item.querySelector('.checklist-input');
@@ -183,5 +189,45 @@ function initNoteCardAnimations() {
     const cards = document.querySelectorAll('.note-card');
     cards.forEach((card, index) => {
         card.style.animationDelay = `${index * 0.05}s`;
+    });
+}
+
+// --- Drag and Drop Logic ---
+function initChecklistDragAndDrop() {
+    const items = document.querySelectorAll('.checklist-item');
+    items.forEach(addDragListeners);
+}
+
+let draggedItem = null;
+
+function addDragListeners(item) {
+    item.addEventListener('dragstart', (e) => {
+        draggedItem = item;
+        setTimeout(() => item.classList.add('dragging'), 0);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', ''); // Required for Firefox
+    });
+
+    item.addEventListener('dragend', () => {
+        draggedItem = null;
+        item.classList.remove('dragging');
+        reindexChecklistItems();
+    });
+
+    item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const container = document.getElementById('checklist-items');
+        if (!container || !draggedItem || draggedItem === item) return;
+
+        // Determine drop position (above or below)
+        const bounding = item.getBoundingClientRect();
+        const offset = bounding.y + (bounding.height / 2);
+        
+        if (e.clientY > offset) {
+            item.after(draggedItem);
+        } else {
+            item.before(draggedItem);
+        }
     });
 }

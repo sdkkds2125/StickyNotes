@@ -90,7 +90,8 @@
                     <div class="checklist-items" id="checklist-items">
                         @for (int i = 0; i < Model.ChecklistItems.Count; i++)
                         {
-                            <div class="checklist-item" data-index="@i">
+                            <div class="checklist-item" data-index="@i" draggable="true">
+                                <div class="drag-handle" title="Drag to reorder">☰</div>
                                 <label class="checklist-check">
                                     <input type="checkbox" 
                                            name="ChecklistItems[@i].IsChecked" 
