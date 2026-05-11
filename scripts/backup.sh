@@ -2,7 +2,7 @@
 # StickyNotes DB Backup Script
 # Runs via cron every 6 hours, keeps 7 days of backups
 
-BACKUP_DIR="/home/sdk/backups/stickynotes"
+BACKUP_DIR="$HOME/backups/stickynotes"
 DB_PATH="/var/lib/stickynotes/notes.db"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
