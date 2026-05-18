@@ -34,7 +34,7 @@ A self-hosted, privacy-first note-taking web application built with **ASP.NET Co
 ### Run Locally
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/sdkkds2125/StickyNotes
 cd StickyNotes
 dotnet run
 ```
