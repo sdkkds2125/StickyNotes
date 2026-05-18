@@ -43,12 +43,12 @@ The app will start on `http://localhost:5000` (configured in `appsettings.json`)
 
 ### Configuration
 
-Edit `appsettings.json` to change the database path or port:
+By default, the app creates a `notes.db` file in the project directory. To change the database location or port, edit `appsettings.json`:
 
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=/var/lib/stickynotes/notes.db"
+    "DefaultConnection": "Data Source=notes.db"
   },
   "Kestrel": {
     "Endpoints": {
@@ -58,6 +58,12 @@ Edit `appsettings.json` to change the database path or port:
     }
   }
 }
+```
+
+To use a custom database path in production (e.g. when running as a systemd service), set an environment variable instead of editing the config file:
+
+```bash
+Environment=ConnectionStrings__DefaultConnection=Data Source=/var/lib/stickynotes/notes.db
 ```
 
 ## Testing
