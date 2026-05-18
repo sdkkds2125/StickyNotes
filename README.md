@@ -29,7 +29,7 @@ A self-hosted, privacy-first note-taking web application built with **ASP.NET Co
 
 ### Prerequisites
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) or later
 
 ### Run Locally
 
